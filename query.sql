@@ -1,18 +1,19 @@
---ID sections for the joins in the schema
+--sections for the joins in the schema
 SELECT
-emp.id AS ID,
-emp.first_name AS First,
-emp.last_name AS Last,
-emp.role_id AS Role,
+e.id AS ID,
+e.first_name AS First,
+e.last_name AS Last,
+e.role_id AS Role,
 r.salary AS Salary,
-mngr.last_name AS Manager,
-dpt.name AS department
+m.last_name AS Manager,
+d.name AS department
 
-FROM employee emp 
-LEFT JOIN employee mngr
-    ON emp.manager_id = mngr.id
+--Joining employee to itself
+FROM employee e 
+LEFT JOIN employee m
+    ON e.manager_id = m.id
 --Joining Role to employee table
-LEFT JOIN role emp.role_id = r.title
+LEFT JOIN role r ON e.role_id = r.title
 --joining department to the role table
-LEFT JOIN department dpt
-    ON r.department_id = dpt.id
+LEFT JOIN department d
+    ON r.department_id = d.id

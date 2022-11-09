@@ -336,9 +336,47 @@ function updateEmployee(){
             function(err, results){
                 if(err) throw err;
                 inquirer
-                .prompts([
-                    
-                ])
+                .prompt([
+                    {
+                        name: 'role',
+                        type: 'rawlist',
+                        choices: function(){
+                            const choiceArr = [];
+                            for(i=0; i< results.length; i++){
+                                choiceArr.push(results[i].role_id)
+                            }
+                            return choiceArr;
+                        },
+                        message: 'Select title'
+                    },
+                    {
+                       name: 'manager',
+                       type: 'number',
+                       validate: function(value){
+                        if(isNaN(value) === false){
+                        return true;
+                       } 
+                       return false;
+                    },
+                    message: 'Enter the new manager ID',
+                    default: '1'
+                }
+
+                ]).then(function(answer){
+                    console.log(answer);
+                    console.log(saveName);
+                    connection.query('UPDATE employee SET ? WHERE last_name = ?',)
+                    [
+                        {
+                            role_id: answer.role,
+                            manager_id: answer.manager
+                        }, saveName
+                    ],
+                ),
+                console.log('Employee has been updated congrats!!');
+                console.log('-----------------------------------------------');
+                start();
+                });
             })
         })
     })
