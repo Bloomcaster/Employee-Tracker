@@ -85,5 +85,76 @@ function view() {
 
 }
 function viewEmployeeRoster() {
-    connection.query('')
+    connection.query('SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS Role, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department pdt ON r.department_id = dpt.id', 
+    function(err, results){
+        console.table(results);
+        start();
+    });
+
+    
+}
+
+function viewByDepartment() {
+    connection.query('SELECT * FROM department', function(err, results) {
+        if(err) throw err;
+        //prompting user after the department is chosen
+        inquirer
+        .prompt([
+            {
+                name: 'choice',
+                type: 'rawlist',
+                choices: function(){
+                    let choiceArr = [];
+                    for(i=0; i< results.length; i++){
+                        choiceArr.push(results[i].name);
+                    }
+                    return choiceArr;
+                },
+                message: 'Select department please'
+            }
+        ]).then(function(answer){
+            connection.query(
+                'SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS ROle, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department dpt ON r.department_id = dpt.id WHERE dpt.name =?',
+                [answer.choice], function(err, results)
+             
+            {
+                if(err) throw err;
+                console.table(results);
+                start();
+            }
+         )
+    });
+});
+}
+
+//database for all departments, then when have gotten roles, prompt user
+function viewByRole(){
+    connection.query('SELECT title FROM role', function(err, results) {
+        if(err) throw err;
+        inquirer
+        .prompt([
+        {
+            name: 'choice',
+            type: 'rawlist',
+            choices: function() {
+                const choiceArr = [];
+                for(i=0; i< results.length; i++) {
+                    choiceArr.push(reuslts[i].title);
+                }
+                return choiceArr;
+            },
+            message: 'Select role'
+        }
+        ]).then(function(answer) {
+            console.log(answer.choice);
+            connection.query(
+                'SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS ROle, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department dpt ON r.department_id = dpt.id WHERE dpt.name =?',
+                [answer.choice], function(err, results) {
+                    if(err) throw err;
+                    console.table(results);
+                    start();
+                }
+            )
+        });
+    });
 }
