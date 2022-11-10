@@ -2,7 +2,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
-//const { start } = require('repl');
+
 
 //connection for sql database
 const connection = mysql.createConnection({
@@ -85,7 +85,7 @@ function view() {
 
 }
 function viewEmployeeRoster() {
-    connection.query('SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS Role, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department pdt ON r.department_id = dpt.id', 
+    connection.query('SELECT e.id AS ID, e.first_name AS First, e.last_name AS Last, e.role_id AS Role, r.salary AS Salary, m.last_name AS Manager, d.name AS Department FROM employee e LEFT JOIN employee m ON e.manager_id = m.id LEFT JOIN role r ON e.role_id = r.title LEFT JOIN department D ON r.department_id = d.id', 
     function(err, results){
         console.table(results);
         start();
@@ -114,7 +114,7 @@ function viewByDepartment() {
             }
         ]).then(function(answer){
             connection.query(
-                'SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS ROle, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department dpt ON r.department_id = dpt.id WHERE dpt.name =?',
+                'SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS Role, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department dpt ON r.department_id = dpt.id WHERE dpt.name =?',
                 [answer.choice], function(err, results)
              
             {
@@ -166,7 +166,7 @@ function add() {
             type: 'list',
             name: 'add',
             message: 'which would you like to add?',
-            choices: ['Department', 'Employee role', 'EMployee']
+            choices: ['Department', 'Employee role', 'Employee']
         }
     ]).then(function(res){
         switch(res.add){
@@ -214,7 +214,7 @@ inquirer
         name: 'role',
         type: 'number',
         message: 'Enter the salary',
-        validate function(value){
+        validate: function(value){
             if(isNaN(value)=== false){
                 return true;
             }
@@ -234,7 +234,7 @@ inquirer
 
     }
 ]).then(function(answer){
-    connection.query{
+    connection.query(
         'INSERT INTO role SET ?',
     {
         title: answer.role,
@@ -246,10 +246,10 @@ inquirer
         console.log('Employee Roles are updated with'+ answer.role);
         console.log('-------------------------------------------------');
         start();
-    }
-}
+    })
 })
 }
+
 
 function addEmployee() {
     connection.query('SELECT * FROM role', function(err, results) {
@@ -365,19 +365,19 @@ function updateEmployee(){
                 ]).then(function(answer){
                     console.log(answer);
                     console.log(saveName);
-                    connection.query('UPDATE employee SET ? WHERE last_name = ?',)
+                    connection.query('UPDATE employee SET ? WHERE last_name = ?',
                     [
                         {
                             role_id: answer.role,
                             manager_id: answer.manager
                         }, saveName
                     ],
-                ),
+            ),
                 console.log('Employee has been updated congrats!!');
                 console.log('-----------------------------------------------');
                 start();
                 });
             })
-        })
     })
-}
+
+
