@@ -114,7 +114,7 @@ function viewByDepartment() {
             }
         ]).then(function(answer){
             connection.query(
-                'SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS Role, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department dpt ON r.department_id = dpt.id WHERE dpt.name =?',
+                'SELECT e.id AS ID, e.first_name AS First, e.last_name AS Last, e.role_id AS Role, r.salary AS Salary, m.last_name AS Manager, d.name AS Department FROM employee e LEFT JOIN employee m ON e.manager_id = m.id LEFT JOIN role r ON e.role_id = r.title LEFT JOIN department d ON r.department_id = d.id WHERE d.name =?',
                 [answer.choice], function(err, results)
              
             {
@@ -148,7 +148,7 @@ function viewByRole(){
         ]).then(function(answer) {
             console.log(answer.choice);
             connection.query(
-                'SELECT emp.id AS ID, emp.first_name AS First, emp.last_name AS Last, emp.role_id AS Role, r.salary AS Salary, mngr.last_name AS Manager, dpt.name AS Department FROM employee emp LEFT JOIN employee mngr ON emp.manager_id = mngr.id LEFT JOIN role r ON emp.role_id = r.title LEFT JOIN department dpt ON r.department_id = dpt.id WHERE dpt.name =?',
+                'SELECT e.id AS ID, e.first_name AS First, e.last_name AS Last, e.role_id AS Role, r.salary AS Salary, m.last_name AS Manager, d.name AS Department FROM employee e LEFT JOIN employee m ON e.manager_id = m.id LEFT JOIN role r ON e.role_id = r.title LEFT JOIN department d ON r.department_id = d.id WHERE d.name =?',
                 [answer.choice], function(err, results) {
                     if(err) throw err;
                     console.table(results);
@@ -311,11 +311,10 @@ function addEmployee() {
 }
 
 function updateEmployee(){
-    connection.query('SELECT * FROM employee',
-    function(err, results){
+    connection.query('SELECT * FROM employee', function(err, results){
         if(err) throw err;
-        inquirer
-        .prompt([
+        
+       inquirer.prompt([
             {
                 name: 'choice',
                 type: 'rawlist',
@@ -335,8 +334,8 @@ function updateEmployee(){
             connection.query('SELECT * FROM employee',
             function(err, results){
                 if(err) throw err;
-                inquirer
-                .prompt([
+                
+             inquirer.prompt([
                     {
                         name: 'role',
                         type: 'rawlist',
@@ -358,9 +357,12 @@ function updateEmployee(){
                        } 
                        return false;
                     },
-                    message: 'Enter the new manager ID',
+
+                       message: 'Enter the new manager ID',
                     default: '1'
-                }
+                    },
+                    
+                
 
                 ]).then(function(answer){
                     console.log(answer);
@@ -371,13 +373,20 @@ function updateEmployee(){
                             role_id: answer.role,
                             manager_id: answer.manager
                         }, saveName
-                    ],
-            ),
-                console.log('Employee has been updated congrats!!');
-                console.log('-----------------------------------------------');
-                start();
-                });
-            })
-    })
+                    ], 
+                    function(){
+                        console.log('Employee has been updated congrats!!');
+                        console.log('-----------------------------------------------');
+                        start();
+                    }
+                    )
+               
+                
+            });
+        }
+    )
+ }
+    
 
 
+        )
